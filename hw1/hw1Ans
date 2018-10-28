@@ -1,0 +1,55 @@
+1. 	Inputs are images and outputs are label prediction
+	We can concatenate the image pixels directly into 32*32*8 = 3072-dimensional vector
+	We can also convert the image into histogram and then convert it into vector. For example, with a histogram with 8 bins for each channel, we have an 8*8*8 tensor of color histogram which can be flattened into 512-dimensional input vector.
+
+2. (Implemented in hw1.ipynb) 	
+With raw pixels,
+	On the training set, it reach close to 100% accuracy but on the test set it has average accuracy of 5 runs of 53% accuracy. This might be due to overfitting to the training set. Moreover, the logistic regression doesn't make use of spatial understanding of the image.
+
+	Stopping is done after 50 epoch. There shouldn't be any performance effect since loss is observed to converge to zero.
+With color histogram,
+	Even on the training set, it's accuracy can be below 0.45. The result on the test set is quite bad, it can be 20% accuracy or sometimes 65%. Average accuracy of 5 runs is 49% This means that the color histogram causes loss of important information in the image that can be used to identify the classes.
+
+	Stopping is done after 50 epoch. There might be performance effect of deciding when to stop since loss doesn't seem to converge but instead seems stochasticly decreasing.
+
+3. (Implemented in hw1.ipynb)
+With hingeloss:
+With raw pixels
+	Average accuracy of 5 runs is 0.49 --> lr = 0.1 (Loss converged to zero)
+	Average accuracy of 5 runs is 0.45 --> lr = 0.01 (Loss hasn't converged yet due to low lr)
+With color histogram,
+	Average accuracy of 5 runs is 0.57 --> lr = 0.1(Loss seems to converge with larger lr)
+	Average accuracy of 5 runs is 0.59 --> lr = 0.01(Loss doesn't seem to converge, it's quite stochastic)
+
+4. (Implemented in hw1Part2.ipynb)
+k=1, Accuracy:0.425
+k=2, Accuracy:0.4125
+k=3, Accuracy:0.375
+k=4, Accuracy:0.3875
+k=5, Accuracy:0.3875
+k=6, Accuracy:0.4
+
+
+5.
+We can do this by doing binary classification within the group and by elimination, decide which image to classify the image into.
+E.g.:
+	1. Pass image to bird vs cat, classified as bird. (Eliminated cat as possible label)
+	2. Pass image to bird vs automobile, classified as bird. (Eliminated bird as possible label)
+	3. Pass image to bird vs airplane, classified as airplane. (Hence the image is classified as airplane)
+	4. Therefore image is airplane.
+
+This should typically give worse accuracy due to classifier trained for binary classification and is focused on the differences between 2 classes where as knn classifier makes use of the multi-class nature of the classification task by finding nearest neighbor which can be from any of the 4 class.
+
+6. (Implemented in hw1.ipynb)
+As shown in part 2 and 3, with color histogram, hingeloss is better as a loss function. As mentioned in part 2, color histogram performs worsewhen using logistic loss, which might be because we are losing information when using color histogram. Moreover, training the model with color histogram is difficult as the accuracy is very unstable, It seems to be quite random and not related to lower training loss.
+
+7. (Implemented in hw1Part2.ipynb)
+k=1, Accuracy:0.4125
+k=2, Accuracy:0.3875
+k=3, Accuracy:0.325
+k=4, Accuracy:0.3625
+k=5, Accuracy:0.375
+k=6, Accuracy:0.45
+
+Classification accuracy increased for k=6but decreases for the rest. This might be because some of the google image search results are of different distribution. For example, automobile in google image search might return magazine covers etc. As such with k=6, we have higher change of ignoring the outlier point, resulting with higher accuracy. However for other k values, the results might be worse due to the noisy data from image search.
+
